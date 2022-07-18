@@ -1,8 +1,11 @@
+const StatusEnum = require('./status');
+
 class Task {
-    constructor(description, date, status) {
+    constructor(id, description, date, status) {
+        this.id = id;
         this.date = new Date(date);
         this.description = description;
-        this.status = status;
+        this.status = StatusEnum[status.toLowerCase()];
     }
 }
 

@@ -1,3 +1,4 @@
+global.db = require('../db');
 var express = require('express');
 const TaskModel = require('../models/task');
 const Status = require('../models/status');
@@ -5,27 +6,71 @@ const Status = require('../models/status');
 var router = express.Router();
 
 router.get('/', (req, res, next) => {
-  res.status(200).json('List all of the tasks...');
+    global.db.getAll((err, docs) => {
+        if (err) res.status(500).json(err);
+        else {
+            const tasks = docs.map(d => new TaskModel(d._id, d.description,  d.date, d.status));
+            res.status(200).json(tasks);
+        }
+    });  
 });
 
 // GET tasks/2022
 router.get('/:year', (req, res, next) => {
-    res.status(200).json('List the tasks of a specific year...');
+    const year = req.params.year;
+    const date = new Date(year, '00', '01');
+    global.db.getByDate(date, (err, docs) => {
+        if (err) res.status(500).json(err);
+        else {
+            const tasks = docs.map(d => new TaskModel(d._id, d.description,  d.date, d.status));
+            res.status(200).json(tasks);
+        }
+    });
 });
 
 // GET tasks/2022/12
 router.get('/:year/:month', (req, res, next) => {
-    res.status(200).json('List the tasks of a specific year and month...');
+    const year = req.params.year;
+    const month = req.params.month;
+    const date = new Date(year, month - 1, '01');
+    global.db.getByDate(date, (err, docs) => {
+        if (err) res.status(500).json(err);
+        else {
+            const tasks = docs.map(d => new TaskModel(d._id, d.description, d.date, d.status));
+            res.status(200).json(tasks);
+        }
+    });
 });
 
 // GET tasks/2022/12/12
 router.get('/:year/:month/:day', (req, res, next) => {
-    res.status(200).json(new TaskModel('First task', '2022-07-17', Status.waiting));
+    const year = req.params.year;
+    const month = req.params.month;
+    const day = req.params.day;
+    const date = new Date(year, month - 1, day);
+    global.db.getByDate(date, (err, docs) => {
+        if (err) res.status(500).json(err);
+        else {
+            const tasks = docs.map(d => new TaskModel(d._id, d.description,  d.date, d.status));
+            res.status(200).json(tasks);
+        }
+    });
 });
 
 // POST
 router.post('/', (req, res, next) => {
-    res.status(201).json({ 'sucess': true, 'message': 'New task created' });
+    if (!req.body.date || !req.body.description || !req.body.status) {
+        res.status(422).json({ 'sucess': false, 'message': 'Error: missing parameters...' })
+    }
+    else {
+        const newTask = new TaskModel(null, req.body.description, req.body.date, req.body.status);
+        global.db.addTask(newTask, (err, result) => {
+            if (err) res.status(500).json(err);
+            else {                
+                res.status(201).json({ 'sucess': true, 'message': 'New task added...' });
+            }
+        });        
+    }
 });
 
 // PATH
