@@ -12,6 +12,11 @@ function getAll(callback) {
                 .toArray(callback);
 }
 
+function getById(id, callback) {
+    global.conn.collection('tasks')
+                .findOne(new ObjectId(id), callback);
+}
+
 function getByDate(date, callback) {
     global.conn.collection('tasks')
                 .find({ 'date' : { $gte: new Date(date) } })
@@ -23,8 +28,15 @@ function addTask(task, callback) {
                 .insertOne(task, callback);
 }
 
+function updateTask(id, status, callback) {
+    global.conn.collection('tasks')
+                .updateOne({_id: new ObjectId(id)}, { $set: { status: status } }, callback);
+}
+
 module.exports = { 
     getAll,
+    getById,
     getByDate,
-    addTask
+    addTask,
+    updateTask
 };

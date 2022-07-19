@@ -75,7 +75,16 @@ router.post('/', (req, res, next) => {
 
 // PATH
 router.patch('/:id/change-status', (req, res, next) => {
-    res.status(200).json({ 'sucess': true, 'message': 'The status has been changed' });
+    const id = req.params.id;
+    const status = req.body.status;
+    if (!status) res.status(422).json({ 'sucess': false, 'message': 'Error: missing parameters...' });
+    global.db.updateTask(id, Status[status.toLowerCase()], (err, result) => {
+        if (err) res.status(500).json(err);
+        else {
+            res.status(200).json({ 'sucess': true, 'message': 'The status has been changed...' });
+        }
+    });
+
 });
 
 // PUT
