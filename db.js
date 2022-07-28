@@ -28,9 +28,19 @@ function addTask(task, callback) {
                 .insertOne(task, callback);
 }
 
-function updateTask(id, status, callback) {
+function updateStatus(id, status, callback) {
     global.conn.collection('tasks')
                 .updateOne({_id: new ObjectId(id)}, { $set: { status: status } }, callback);
+}
+
+function updateTask(id, description, callback) {
+    global.conn.collection('tasks')
+                .updateOne({_id: new ObjectId(id)}, { $set: { description: description } }, callback);
+}
+
+function deleteTask(id, callback) {
+    global.conn.collection('tasks')
+                .remove({_id: new ObjectId(id)}, callback);
 }
 
 module.exports = { 
@@ -38,5 +48,7 @@ module.exports = {
     getById,
     getByDate,
     addTask,
-    updateTask
+    updateStatus,
+    updateTask,
+    deleteTask
 };

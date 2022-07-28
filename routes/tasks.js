@@ -73,7 +73,7 @@ router.post('/', (req, res, next) => {
     }
 });
 
-// PATH
+// PATCH
 router.patch('/:id/change-status', (req, res, next) => {
     const id = req.params.id;
     const status = req.body.status;
@@ -84,17 +84,30 @@ router.patch('/:id/change-status', (req, res, next) => {
             res.status(200).json({ 'sucess': true, 'message': 'The status has been changed...' });
         }
     });
-
 });
 
-// PUT
-router.put('/:id', (req, res, next) => {
-    res.status(200).json({ 'sucess': true, 'message': 'Task edited' });
+// PATCH
+router.patch('/:id/description', (req, res, next) => {
+    const id = req.params.id;
+    const description = req.body.description;
+    if (!description) res.status(422).json({ 'sucess': false, 'message': 'Error: missing parameters...' });
+    global.db.updateTask(id, description, (err, result) => {
+        if (err) res.status(500).json(err);
+        else {
+            res.status(200).json({ 'sucess': true, 'message': 'The task description has been changed...' });
+        }
+    });
 });
 
 // DELETE
 router.delete('/:id', (req, res, next) => {
-    res.status(200).json({ 'sucess': true, 'message': 'Task excluded' });
+    const id = req.params.id;
+    global.db.deleteTask(id, (err, result) => {
+        if (err) res.status(500).json(err);
+        else {
+            res.status(200).json({ 'sucess': true, 'message': 'The task has been removed...' });
+        }
+    });
 });
 
 module.exports = router;
