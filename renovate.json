@@ -1,5 +1,9 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "timezone": "America/Sao_Paulo",
+  "schedule": [
+    "after 1pm every sunday"
+  ],
   "extends": [
     "config:base"
   ],
